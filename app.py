@@ -1,6 +1,7 @@
 import streamlit as st
 import pdfplumber
 
+
 def extract_text_from_pdf(pdf_file):
     text = ""
     with pdfplumber.open(pdf_file) as pdf:
@@ -8,8 +9,10 @@ def extract_text_from_pdf(pdf_file):
             text += page.extract_text() + "\n"
     return text
 
+
 def clean_text(text):
     return text.lower()
+
 
 SKILLS_LIST = [
     "python", "java", "c++", "javascript", "html", "css",
@@ -18,6 +21,20 @@ SKILLS_LIST = [
     "git", "github", "excel", "power bi", "tableau"
 ]
 
+SKILL_RESOURCES = {
+    "python": "freeCodeCamp - Python Course",
+    "java": "Oracle Java Tutorials",
+    "sql": "W3Schools SQL Tutorial",
+    "react": "React Official Docs",
+    "machine learning": "Coursera - Andrew Ng's ML Course",
+    "data analysis": "Kaggle Learn - Data Analysis",
+    "excel": "Microsoft Excel Training",
+    "git": "GitHub Learning Lab",
+    "tableau": "Tableau Public Training",
+    "power bi": "Microsoft Power BI Learning"
+}
+
+
 def find_skills(text, skills_list):
     found = []
     for skill in skills_list:
@@ -25,11 +42,13 @@ def find_skills(text, skills_list):
             found.append(skill)
     return found
 
+
 st.title("Resume Analyzer")
 st.write("Upload your resume and paste a job description to see your match score.")
 
 uploaded_file = st.file_uploader("Upload your resume (PDF)", type="pdf")
 job_description = st.text_area("Paste the job description here")
+
 
 if st.button("Analyze"):
     if uploaded_file is not None and job_description.strip() != "":
@@ -41,10 +60,19 @@ if st.button("Analyze"):
 
         matched_skills = [s for s in resume_skills if s in job_skills]
         missing_skills = [s for s in job_skills if s not in resume_skills]
-        match_percentage = round((len(matched_skills) / len(job_skills)) * 100, 2) if job_skills else 0
+        match_percentage = round(
+            (len(matched_skills) / len(job_skills)) * 100, 2
+        ) if job_skills else 0
 
         st.subheader(f"Match Score: {match_percentage}%")
         st.write("**Matched Skills:**", matched_skills)
-        st.write("**Missing Skills:**", missing_skills)
+        st.write("**Missing Skills & Suggested Resources:**")
+
+        for skill in missing_skills:
+            resource = SKILL_RESOURCES.get(
+                skill, "Search online for tutorials"
+            )
+            st.write(f"- **{skill}** → {resource}")
+
     else:
-        st.warning("Please upload a resume and enter a job description.")
+        st.warning("Please upload a resume and enter a job description.") 
