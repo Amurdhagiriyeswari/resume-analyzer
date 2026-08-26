@@ -41,8 +41,20 @@ SKILL_RESOURCES = {
 "nlp": "Coursera - NLP Specialization",
 "deep learning": "DeepLearning.AI - Deep Learning Specialization",
 "aws": "AWS Skill Builder (free tier)",
-"docker": "Docker Official Getting Started Guide"
+"docker": "Docker Official Getting Started Guide",
+    "hugging face": "Hugging Face - Official Course (huggingface.co/course)",
+    "openai": "OpenAI API Documentation & Quickstart Guide",
+    "langchain": "LangChain Official Documentation",
+    "computer vision": "OpenCV Official Tutorials",
+    "data science": "Kaggle Learn - Data Science",
+    "cloud computing": "AWS Cloud Practitioner Essentials (free)",
+    "kubernetes": "Kubernetes Official Basics Tutorial",
+    "chatgpt": "OpenAI ChatGPT Documentation",
+    "artificial intelligence": "Google AI - Machine Learning Crash Course",
+    "tensorflow": "TensorFlow Official Tutorials",
+    "pytorch": "PyTorch Official Tutorials"
 }
+
 
 def find_skills(text, skills_list):
     found = []
@@ -74,8 +86,7 @@ if st.button("Analyze"):
         st.write("**Matched Skills:**", matched_skills)
         st.write("**Missing Skills & Suggested Resources:**")
         for skill in missing_skills:
-         resource = SKILL_RESOURCES.get(skill, "Search online for tutorials")
-        st.write(f"- **{skill}** → {resource}")
-
-else:
-    st.warning("Please upload a resume and enter a job description.")
+            resource = SKILL_RESOURCES.get(skill, "Search online for tutorials")
+            st.write(f"- **{skill}** → {resource}")
+    else:
+        st.warning("Please upload a resume and enter a job description.")
