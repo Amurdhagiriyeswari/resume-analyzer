@@ -1,5 +1,6 @@
 import streamlit as st
 import pdfplumber
+import re
 
 def extract_text_from_pdf(pdf_file):
     text = ""
@@ -46,7 +47,8 @@ SKILL_RESOURCES = {
 def find_skills(text, skills_list):
     found = []
     for skill in skills_list:
-        if skill in text:
+        pattern = r'\b' + re.escape(skill) + r'\b'
+        if re.search(pattern, text):
             found.append(skill)
     return found
 
