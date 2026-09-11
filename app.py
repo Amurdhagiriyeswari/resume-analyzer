@@ -8,7 +8,6 @@ def extract_text_from_pdf(pdf_file):
         for page in pdf.pages:
             text += page.extract_text() + "\n"
     return text
-
 def clean_text(text):
     return text.lower()
 
@@ -55,13 +54,16 @@ SKILL_RESOURCES = {
     "tensorflow": ("TensorFlow Official Tutorials", "https://www.tensorflow.org/tutorials"),
     "pytorch": ("PyTorch Official Tutorials", "https://pytorch.org/tutorials/")
 }
-
 CAREER_SKILLS = {
     "Data Scientist": ["python", "sql", "pandas", "numpy", "machine learning", "data analysis", "git"],
     "Web Developer": ["html", "css", "javascript", "react", "node.js", "git", "sql"],
     "AI/ML Engineer": ["python", "machine learning", "deep learning", "tensorflow", "pytorch", "nlp", "git"],
+    "Frontend Developer": ["html", "css", "javascript", "react", "git"],
+    "Backend Developer": ["python", "java", "sql", "flask", "django", "git"],
+    "Cloud Engineer": ["aws", "azure", "docker", "kubernetes", "cloud computing", "git"],
+    "Cybersecurity Analyst": ["python", "sql", "git", "cloud computing", "docker"],
+    "Data Analyst": ["sql", "excel", "pandas", "data analysis", "power bi", "tableau"],
 }
-
 def find_skills(text, skills_list):
     found = []
     for skill in skills_list:
@@ -85,27 +87,76 @@ if mode == "Resume vs Job Description":
             resume_text = clean_text(extract_text_from_pdf(uploaded_file))
             resume_skills = find_skills(resume_text, SKILLS_LIST)
 
+            # Resume Strength Tips
+            st.subheader("Resume Strength Tips")
+
+            word_count = len(resume_text.split())
+
+            if "github" in resume_text:
+                st.success("✅ GitHub link/profile mentioned.")
+            else:
+                st.warning("⚠️ Add your GitHub profile to showcase your projects.")
+
+            if "certification" in resume_text or "certificate" in resume_text:
+                st.success("✅ Certifications mentioned.")
+            else:
+                st.warning("⚠️ Consider adding relevant certifications.")
+
+            if word_count < 200:
+                st.warning(
+                    "⚠️ Your resume seems short. Consider adding more details about your projects and experience."
+                )
+            else:
+                st.success("✅ Resume has a reasonable amount of content.")
+
             job_text = clean_text(job_description)
             job_skills = find_skills(job_text, SKILLS_LIST)
 
             matched_skills = [s for s in resume_skills if s in job_skills]
             missing_skills = [s for s in job_skills if s not in resume_skills]
-            match_percentage = round((len(matched_skills) / len(job_skills)) * 100, 2) if job_skills else 0
+            match_percentage = round(
+                (len(matched_skills) / len(job_skills)) * 100, 2
+            ) if job_skills else 0
 
             st.subheader(f"Match Score: {match_percentage}%")
+            st.progress(int(match_percentage))
+
+            if match_percentage >= 70:
+                st.success("🟢 STRONG MATCH — Your skills closely match this job!")
+            elif match_percentage >= 40:
+                st.warning("🟡 MODERATE MATCH — You can improve some skills.")
+            else:
+                st.error("🔴 NEEDS PREPARATION — Focus on the missing skills.")
+
             st.write("**Matched Skills:**", matched_skills)
             st.write("**Missing Skills & Suggested Resources:**")
+
             for skill in missing_skills:
-                resource = SKILL_RESOURCES.get(skill, ("Search online for tutorials", "https://www.google.com/search?q=" + skill.replace(" ", "+") + "+tutorial"))
-                st.write(f"- **{skill}** → [{resource[0]}]({resource[1]})")
+                resource = SKILL_RESOURCES.get(
+                    skill,
+                    (
+                        "Search online for tutorials",
+                        "https://www.google.com/search?q="
+                        + skill.replace(" ", "+")
+                        + "+tutorial"
+                    )
+                )
+
+                st.write(
+                    f"- **{skill}** → [{resource[0]}]({resource[1]})"
+                )
         else:
             st.warning("Please upload a resume and enter a job description.")
-
 elif mode == "Career Skill Roadmap":
-    career = st.selectbox("Choose your target career:", list(CAREER_SKILLS.keys()))
+    career = st.selectbox(
+        "Choose your target career:",
+        list(CAREER_SKILLS.keys())
+    )
+
     st.write(f"Select the skills you already have for **{career}**:")
 
     student_skills = []
+
     for skill in CAREER_SKILLS[career]:
         if st.checkbox(skill.title()):
             student_skills.append(skill)
@@ -115,8 +166,30 @@ elif mode == "Career Skill Roadmap":
         missing = [s for s in required if s not in student_skills]
         match_pct = round((len(student_skills) / len(required)) * 100, 2)
 
-        st.subheader(f"Skill Match: {match_pct}%")
-        st.write("**Missing Skills:**")
+        st.subheader(f"Match Score: {match_pct}%")
+        st.progress(int(match_pct))
+
+        if match_pct >= 70:
+            st.success("🟢 STRONG MATCH — You're well prepared for this career!")
+        elif match_pct >= 40:
+            st.warning("🟡 MODERATE MATCH — Keep building your skills.")
+        else:
+            st.error("🔴 NEEDS PREPARATION — Learn more of the required skills.")
+
+        st.write("**Matched Skills:**", student_skills)
+        st.write("**Missing Skills & Suggested Resources:**")
+
         for skill in missing:
-            resource = SKILL_RESOURCES.get(skill, ("Search online for tutorials", "https://www.google.com/search?q=" + skill.replace(" ", "+") + "+tutorial"))
-            st.write(f"- **{skill}** → [{resource[0]}]({resource[1]})")
+            resource = SKILL_RESOURCES.get(
+                skill,
+                (
+                    "Search online for tutorials",
+                    "https://www.google.com/search?q="
+                    + skill.replace(" ", "+")
+                    + "+tutorial"
+                )
+            )
+
+            st.write(
+                f"- **{skill}** → [{resource[0]}]({resource[1]})"
+            )
