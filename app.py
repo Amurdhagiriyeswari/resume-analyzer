@@ -383,4 +383,20 @@ elif st.session_state.page == "compare":
                     st.progress(int(pct))
                     st.write(f"{pct}%")
 
+        compare_text = f"""CAREER COMPARISON REPORT
+========================
+Skills Selected: {', '.join(my_skills) if my_skills else 'None'}
+
+Best Fit: {best_career} ({best_pct}%)
+
+Match Across All Careers:
+{chr(10).join([f'- {name}: {pct}%' for name, pct in results])}
+"""
+        st.download_button(
+            label="📥 Download Comparison Report",
+            data=compare_text,
+            file_name="career_comparison_report.txt",
+            mime="text/plain"
+        )
+
         st.session_state.history.append(f"Compared all careers with {len(my_skills)} skills")
